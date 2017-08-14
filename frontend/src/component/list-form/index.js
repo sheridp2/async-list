@@ -1,4 +1,5 @@
 import React from 'react';
+import * as util from '../../lib/util.js';
 
 class ListForm extends React.Component {
   constructor(props) {
@@ -12,7 +13,14 @@ class ListForm extends React.Component {
   }
   handleSubmit(e) {
     e.preventDefault();
-    this.props.onComplete(this.state);
+    let { onComplete } = this.props;
+    let result = onComplete(this.state);
+    if (result instanceof Promise) {
+      result.then(() => this.setState({ error: null })).catch(error => {
+        util.log('ListForm Error:', error);
+        this.setState({ error });
+      });
+    }
   }
 
   handleChange(e) {
@@ -20,15 +28,19 @@ class ListForm extends React.Component {
   }
   render() {
     return (
-      <form className="list-form" onSubmit={this.handleSubmit}>
+      <form onSubmit={this.handleSubmit}
+        className={util.classToggler({
+          'list-form': true,
+          'error': this.state.error,
+        })}>
         <input
-          name='title'
-          type='text'
-          placeholder='title'
+          name="title"
+          type="text"
+          placeholder="title"
           value={this.state.title}
           onChange={this.handleChange}
         />
-        <button type='submit'> {this.props.buttonText} </button>
+        <button type="submit"> {this.props.buttonText} </button>
       </form>
     );
   }

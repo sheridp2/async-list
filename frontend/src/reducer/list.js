@@ -8,6 +8,8 @@ let validatePayload = (payload) =>{
 export default (state = [], action) => {
   let { type, payload } = action;
   switch (type) {
+  case 'LIST_SET':
+    return payload;
   case 'LIST_CREATE':
     return [payload, ...state];
   case 'LIST_UPDATE':
